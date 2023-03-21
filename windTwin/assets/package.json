@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "apexcharts": "^3.37.1",
+    "chart.js": "^4.2.1",
+    "google-charts": "^2.0.0"
+  },
+  "devDependencies": {
+    "fft-js": "^0.0.12"
+  }
+}

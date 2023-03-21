@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="csrf-token" content={csrf_token_value()}>
+    <%= live_title_tag assigns[:page_title] || "WindTwin", suffix: " · Phoenix Framework" %>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+
+
+    <style>
+
+              :not(:defined) > * {
+              display: none;
+            }
+
+            body {
+              margin: 0;
+              padding: 0;
+              width: 100vw;
+              height: 100vh;
+            }
+
+            model-viewer {
+              width: 100%;
+              height: 90%;
+              background-color: #ffffff;
+            }
+
+
+            .progress-bar {
+              display: block;
+              width: 33%;
+              height: 10%;
+              max-height: 2%;
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate3d(-50%, -50%, 0);
+              border-radius: 25px;
+              box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.5), 0px 0px 5px 1px rgba(0, 0, 0, 0.6);
+              border: 1px solid rgba(255, 255, 255, 0.9);
+              background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .progress-bar.hide {
+              visibility: hidden;
+              transition: visibility 0.3s;
+            }
+
+            .update-bar {
+              background-color: rgba(255, 255, 255, 0.9);
+              width: 0%;
+              height: 100%;
+              border-radius: 25px;
+              float: left;
+              transition: width 0.3s;
+            }
+
+            #ar-button {
+              background-image: url(ar_icon.png);
+              background-repeat: no-repeat;
+              background-size: 20px 20px;
+              background-position: 12px 50%;
+              background-color: #fff;
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              white-space: nowrap;
+              bottom: 16px;
+              padding: 0px 16px 0px 40px;
+              font-family: Roboto Regular, Helvetica Neue, sans-serif;
+              font-size: 14px;
+              color:#4285f4;
+              height: 36px;
+              line-height: 36px;
+              border-radius: 18px;
+              border: 1px solid #DADCE0;
+            }
+
+            #ar-button:active {
+              background-color: #E8EAED;
+            }
+
+            #ar-button:focus {
+              outline: none;
+            }
+
+            #ar-button:focus-visible {
+              outline: 1px solid #4285f4;
+            }
+
+            @keyframes circle {
+              from { transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg); }
+              to   { transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg); }
+            }
+
+            @keyframes elongate {
+              from { transform: translateX(100px); }
+              to   { transform: translateX(-100px); }
+            }
+
+            model-viewer > #ar-prompt {
+              position: absolute;
+              left: 50%;
+              bottom: 60px;
+              animation: elongate 2s infinite ease-in-out alternate;
+              display: none;
+            }
+
+            model-viewer[ar-status="session-started"] > #ar-prompt {
+              display: block;
+            }
+
+            model-viewer > #ar-prompt > img {
+              animation: circle 4s linear infinite;
+            }
+    </style>
+
+
+<style>
+  .anchor{
+    display: none;
+  }
+
+  .lineContainer{
+    pointer-events: none;
+    display: block;
+  }
+
+  .line{
+    stroke: #fd1757;
+    stroke-width: 3;
+    stroke-dasharray: 3;
+  }
+
+  #container3{
+    position: absolute;
+    display:block ;
+    justify-content: space-evenly;
+    bottom: 409px;
+    left: 58px;
+    width: 1%;
+  }
+
+  #container2{
+    position: absolute;
+    display:block ;
+    justify-content: space-evenly;
+    bottom: 109px;
+    left: 58px;
+    width: 1%;
+  }
+
+
+  #container1{
+    position: absolute;
+    display:block ;
+    justify-content: space-evenly;
+    bottom: 409px;
+    left: 408px;
+    width: 1%;
+  }
+
+  .label{
+    background: #fff;
+    border-radius: 4px;
+    border: none;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.8);
+    display: block;
+    font-family: Futura, Helvetica Neue, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    max-width: 128px;
+    padding: 0.5em 1em;
+    bottom: 10px;
+    pointer-events: none;
+  }
+
+  #animation-demo::part(default-ar-button){
+    bottom: 64px;
+  }
+
+  /* This keeps child nodes hidden while the element loads */
+  :not(:defined) > * {
+    display: none;
+  }
+</style>
+
+  </head>
+  <body  class="h-screen bg-cover bg-center bg-[url('images/bg.jpg')]">
+
+    <div class="flex h-full ">
+      <div class="model w-4/12  h-full">
+
+          <model-viewer  class="bg-transparent" id="change-speed-demo" src="images/uploads_files_3344159_WindMill.glb" ar
+          ar-modes="webxr scene-viewer quick-look" camera-controls poster="images/poster.webp" shadow-intensity="1" autoplay>
+          <!-- <button  style="background-color: white; border-radius: 4px; border: none; position: absolute; top: 16px; right: 16px; ">
+            Activate AR
+        </button> -->
+
+
+        <div slot="hotspot-rpm_tag" class="anchor" data-surface="2 0 3260 3178 3176 0.457 0.058 0.485"></div>
+        <div slot="hotspot-vibration_tag" class="anchor" data-surface="0 0 3964 557 3970 0.134 0.332 0.534"></div>
+        <div slot="hotspot-voltage_tag" class="anchor" data-surface="1 0 13830 13912 13906 0.354 0.098 0.548"></div>
+        <svg id="lines" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="lineContainer">
+          <line class="line"></line>
+          <line class="line"></line>
+          <line class="line"></line>
+        </svg>
+
+        <div id="container1">
+          <button id="rpm_tag" class="label">0 RPM</button>
+
+        </div>
+
+
+        <div id="container2">
+
+          <button id="vibration_tag" class="label">0 Vibration</button>
+
+        </div>
+
+
+
+
+        <div id="container3">
+
+          <button id="voltage_tag" class="label">0 Voltage</button>
+        </div>
+        </model-viewer>
+
+      </div>
+      <div class=" w-8/12  h-full">
+        <div class=" h-full w-full flex flex-col   p-5">
+
+          <div class=" w-full bg-clip-border m-1 rounded-xl bg-white text-gray-700 shadow-md" id="myChart1"></div>
+          <div class=" w-full bg-clip-border m-1 rounded-xl bg-white text-gray-700 shadow-md" id="myChart2"></div>
+          <div class=" w-full bg-clip-border m-1 rounded-xl bg-white text-gray-700 shadow-md" id="myChart3"></div>
+
+        </div>
+
+      </div>
+
+  </div>
+
+
+<%= @inner_content %>
+
+  </body>
+
+<script>
+
+  function updateresf(val)
+  {
+
+    Window.resonanceFrequency=val;
+    console.log(Window.resonanceFrequency);
+  }
+</script>
+
+
+
+<script>
+  function changeSpeed(speed) {
+    const viewer = document.querySelector('#change-speed-demo');
+    viewer.timeScale=speed/3;
+  }
+</script>
+
+
+
+<script type="module">
+  const modelViewer1 = document.querySelector('#change-speed-demo');
+  const lines = modelViewer1.querySelectorAll('line');
+  let baseRect;
+  let noseRect;
+  let hoofRect;
+  let tailRect;
+
+  function onResize(){
+    baseRect = modelViewer1.getBoundingClientRect();
+    noseRect = document.querySelector('#rpm_tag').getBoundingClientRect();
+    hoofRect = document.querySelector('#vibration_tag').getBoundingClientRect();
+    tailRect = document.querySelector('#voltage_tag').getBoundingClientRect();
+  }
+
+  modelViewer1.addEventListener('ar-status', onResize);
+
+  modelViewer1.addEventListener('load', () => {
+    onResize();
+    // update svg
+    function drawLine(svgLine, name, rect) {
+      const hotspot = modelViewer1.queryHotspot('hotspot-' + name);
+      svgLine.setAttribute('x1', hotspot.canvasPosition.x);
+      svgLine.setAttribute('y1', hotspot.canvasPosition.y);
+      svgLine.setAttribute('x2', (rect.left + rect.right) / 2 - baseRect.left);
+      svgLine.setAttribute('y2', rect.top - baseRect.top);
+    }
+
+    // use requestAnimationFrame to update with renderer
+    const startSVGRenderLoop = () => {
+      drawLine(lines[0], 'rpm_tag', noseRect);
+      drawLine(lines[1], 'vibration_tag', hoofRect);
+      drawLine(lines[2], 'voltage_tag', tailRect);
+      requestAnimationFrame(startSVGRenderLoop);
+    };
+
+    startSVGRenderLoop();
+  });
+</script>
+</html>

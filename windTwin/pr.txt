@@ -1,0 +1,50 @@
+i want to build a realtime dashboard using Phoenix live view,
+
+The dashboard have one line chart (x-axis contains months and y-axis contains temprature value) and a h1 tag indicating the light status (on or off).
+
+i want update this dashbord in raltime whenever a event "update" is pushed to socket with chart data and light status
+
+so what are the changes i have to do in my app.js and Phoenix channel and live view
+
+i alredy added <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script> to the root html file
+
+
+defmodule WindTwinWeb.WindTwinLive do
+  use WindTwinWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    # :ok = Phoenix.PubSub.subscribe(WindTwinWeb.PubSub, "twin:lobby")
+    WindTwinWeb.Endpoint.subscribe("twin:lobby")
+    socket = assign(socket, :light, "off")
+
+    {:ok, socket}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <div class="h-screen #bg-[url('images/bg.gif')]">
+    <h1><%= @light %></h1>
+    <canvas phx-hook="chart" id="myChart"></canvas>
+    </div>
+    """
+  end
+
+
+
+  def handle_info(data, socket) do
+    # y_pos = %{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}
+    IO.inspect(data)
+    socket= cond do
+        data.event == "update" ->
+          socket = assign(socket, :light, data.payload["light_staus"])
+          socket
+
+        true ->
+          socket
+      end
+
+    {:noreply, socket}
+  end
+
+
+end
